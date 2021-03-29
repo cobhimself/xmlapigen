@@ -25,7 +25,6 @@ import pathlib
 import sys
 import os
 from .generator import cache
-from .schema import Schema
 from .generator.classdef import ElementClassDef, element_factory, group_factory, type_factory
 from .generator.config import Config, COMPLEX
 
@@ -34,25 +33,22 @@ class ElementGenerator():
     """Class responsible for generating xsd-based configuration and classes
     """
 
-    def __init__(self, output, inputs):
+    def __init__(self, output, config_file):
         self._root = str(pathlib.Path(__file__).parent.parent)
         self._output_dir = output
-        self._inputs = inputs
         self._xmldir = self._root + '/../test/_sample_data/_build/php/xml/'
-        config_file = str(pathlib.Path(
-            self._root + '/util/generator/config.yml'))
         self._config = Config(config_file)
-        self._xsd = xsd
-        self._xsd_out_dir = self._root + '/xsd/'
+        self._xsd_out_dir = output + '/xsd/'
         self._schema = None
 
     def load_schema(self, xsd):
+        from .schema import Schema
         """Load the schema for the given xsd file.
 
         Args:
-            xsd (str): The xsd file name without the extension.
+            xsd (str): The xsd file path.
         """
-        self._schema = Schema(self._get_xsd_file_path(xsd))
+        self._schema = Schema(xsd)
 
     def get_schema(self):
         return self._schema
@@ -75,25 +71,13 @@ class ElementGenerator():
         file.write(content)
         file.close()
 
-    def _get_xsd_file_path(self, xsd):
-        """Get the file path for the given xsd file.
-
-        Args:
-            xsd (str): The name of the xsd file, without the extension, we
-            want to get the path for.
-
-        Returns:
-            str: The file path for the xsd file.
-        """
-        return str(pathlib.Path(f'{self._xmldir}/{xsd}.xsd').resolve())
-
     def _get_xsd_dir(self):
         """Get the directory of the xsd root folder.
 
         Returns:
             str: The xsd root folder path.
         """
-        return self._root + '/xsd/'
+        return self._xsd_out_dir
 
     def _get_dir_for_xsd(self, xsd):
         """Get the directory where we will put files relating to the given
@@ -105,6 +89,7 @@ class ElementGenerator():
         Returns:
             str: The directory where files for this xsd will be placed.
         """
+        xsd = os.path.basename(xsd).split('.')[0]
         return self._get_xsd_dir() + f'{xsd}/'
 
     def _get_elements_dir(self, xsd):
@@ -143,9 +128,9 @@ class ElementGenerator():
         """
         return self._get_dir_for_xsd(xsd) + 'groups/'
 
-    def _generate_groups(self, xsd_name):
+    def _generate_groups(self, xsd_file):
         config = self._config
-        groups_dir = self._get_groups_dir(xsd_name)
+        groups_dir = self._get_groups_dir(xsd_file)
         groups = config.get_groups()
         schema = self.get_schema()
         if len(groups) > 0:
@@ -210,21 +195,16 @@ class ElementGenerator():
     def generate(self):
         """Generate the classes based on our config.
         """
-        config = self._config.load()
-        for xsd_name in config.get_xsd_names():
-            self.load_schema(xsd_name)
-            config.set_xsd(xsd_name)
-            cache.clear()
-            self._generate_groups(xsd_name)
-            self._generate_types(xsd_name)
-            self._generate_elements(xsd_name)
+        from .generator import cache
 
-    def generate_config(self):
-        """Generate the config for our final class generation.
-        """
-        self.load_schema(self._xsd)
-        self._schema.compile()
-        self._write_config()
+        config = self._config.load()
+        for xsd_file in config.get_xsd_files():
+            cache.clear()
+            self.load_schema(xsd_file)
+            config.set_xsd(xsd_file)
+            self._generate_groups(xsd_file)
+            self._generate_types(xsd_file)
+            self._generate_elements(xsd_file)
 
     @staticmethod
     def _write_package_folders(dirs):

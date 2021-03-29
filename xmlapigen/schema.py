@@ -1,5 +1,5 @@
 from xmlschema import XMLSchema
-from .generator import cache
+from .element_generator import cache
 
 class Schema():
     def __init__(self, xmlschema):

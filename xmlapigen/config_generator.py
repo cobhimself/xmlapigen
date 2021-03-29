@@ -63,6 +63,7 @@ class ConfigGenerator():
         """
 
         for inp in self._inputs:
+          cache.clear()
           schema = Schema(inp)
           schema.compile()
           self._write_config(inp)

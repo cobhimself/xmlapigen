@@ -184,19 +184,10 @@ class Config():
         return config[key]
 
     def get_xsd_files(self):
-        """Get a list of xsd files our config file knows about.
-
-        Returns:
-            list: The list of xsd files our config knows about.
-        """
-        return [file + EXT for file in self.get_xsd_names()]
-
-    def get_xsd_names(self):
         """Get a list of xsd file names our config file knows about.
 
         Returns:
-            list: The list of xsd files our config knows about without the
-                file extension.
+            list: The list of xsd files our config knows about.
         """
         return self.get_config(False).keys()
 

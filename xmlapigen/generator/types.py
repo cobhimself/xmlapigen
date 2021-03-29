@@ -28,7 +28,7 @@ from xmlschema.validators import XsdGroup
 from xmlschema.validators.elements import XsdElement
 from xmlschema.validators.attributes import XsdAttributeGroup, XsdAttribute, XsdAnyAttribute
 from xmlschema.validators.simple_types import XsdAtomicBuiltin
-from ..element_generator import cache
+from ..generator import cache
 
 
 class Super():
@@ -57,10 +57,10 @@ class Super():
         Returns:
             Type: the type matching the given name.
         """
-        return cache.get_type(type_name)
+        return self.get_cache().get_type(type_name)
 
     def get_group_from_cache(self, group_name):
-        return cache.get_group(group_name)
+        return self.get_cache().get_group(group_name)
 
     def get_cache(self):
         return cache

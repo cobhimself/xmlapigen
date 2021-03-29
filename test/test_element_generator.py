@@ -3,9 +3,9 @@ from xmlapigen.element_generator import ElementGenerator
 
 if __name__ == '__main__':
   here = str(pathlib.Path(__file__).parent.parent)
-  data_dir = here + '/test/_data/'
+  data_dir = here + '/_build/'
 
   ElementGenerator(
-    None,
+    data_dir,
     data_dir + 'config.yml'
  ).generate()

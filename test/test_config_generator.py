@@ -9,7 +9,6 @@ if __name__ == '__main__':
     None,
     [
       data_dir + 'compound.xsd',
-      data_dir + 'index.xsd',
-      data_dir + 'xml.xsd'
+      data_dir + 'index.xsd'
     ]
  ).generate()
