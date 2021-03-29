@@ -12,4 +12,4 @@ if __name__ == '__main__':
       data_dir + 'index.xsd',
       data_dir + 'xml.xsd'
     ]
- ).generate_config()
+ ).generate()

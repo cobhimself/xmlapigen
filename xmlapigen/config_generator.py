@@ -58,7 +58,7 @@ class ConfigGenerator():
         """
         self._schema = Schema(xsd)
 
-    def generate_config(self):
+    def generate(self):
         """Generate the config for our final class generation.
         """
 
